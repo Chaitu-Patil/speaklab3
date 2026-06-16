@@ -71,6 +71,14 @@ export default function About() {
         </h1>
       </motion.div>
 
+      <motion.div {...fade(0.08)} className="mb-8">
+        <img
+          src="https://drive.google.com/uc?export=view&id=1Jv2TDsMceoKArYKfzopkHlGDrtLjPRwl"
+          alt="Founder"
+          className="w-28 h-28 rounded-2xl object-cover object-top border border-[#1a1a1a]"
+        />
+      </motion.div>
+
       <motion.div {...fade(0.1)} className="space-y-4 text-sm text-[#555] leading-[1.8] mb-10">
         <p>
           I'm a middle schooler from Bellevue, WA. I built SpeakLab because I know firsthand how
