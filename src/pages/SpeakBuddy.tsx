@@ -8,6 +8,7 @@ import Button from '../components/ui/Button'
 
 interface CoachingPayload {
   responseType: 'coaching'
+  message: string
   diagnosis: string
   drill: string
   followUp: string
@@ -53,37 +54,44 @@ function CoachingCard({ payload }: { payload: CoachingPayload }) {
   }
 
   return (
-    <div className="bg-[#0f0f0f] border border-[#1f1f1f] rounded-xl overflow-hidden flex-1 min-w-0">
-      <div className="flex border-b border-[#1a1a1a]">
-        {tabs.map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2 text-xs font-medium transition-colors ${
-              activeTab === key
-                ? 'text-orange-400 border-b-2 border-orange-500 bg-orange-500/5'
-                : 'text-surface-500 hover:text-surface-300'
-            }`}
+    <div className="flex-1 min-w-0 space-y-2">
+      {payload.message && (
+        <div className="px-3 py-2 rounded-xl bg-[#1a1a1a] border border-[#252525]">
+          <p className="text-xs text-surface-300 leading-relaxed">{payload.message}</p>
+        </div>
+      )}
+      <div className="bg-[#0f0f0f] border border-[#1f1f1f] rounded-xl overflow-hidden">
+        <div className="flex border-b border-[#1a1a1a]">
+          {tabs.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2 text-xs font-medium transition-colors ${
+                activeTab === key
+                  ? 'text-orange-400 border-b-2 border-orange-500 bg-orange-500/5'
+                  : 'text-surface-500 hover:text-surface-300'
+              }`}
+            >
+              <Icon className="w-3 h-3" />
+              {label}
+            </button>
+          ))}
+        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="p-3"
           >
-            <Icon className="w-3 h-3" />
-            {label}
-          </button>
-        ))}
+            <p className="text-xs text-surface-300 leading-relaxed whitespace-pre-wrap">
+              {content[activeTab]}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.15 }}
-          className="p-3"
-        >
-          <p className="text-xs text-surface-300 leading-relaxed whitespace-pre-wrap">
-            {content[activeTab]}
-          </p>
-        </motion.div>
-      </AnimatePresence>
     </div>
   )
 }
