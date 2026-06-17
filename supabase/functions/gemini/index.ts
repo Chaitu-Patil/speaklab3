@@ -372,7 +372,24 @@ Deno.serve(async (req: Request) => {
     let response;
 
     if (hasApiKey) {
-      response = await runGemini(type, messages ?? [], videoAnalysis);
+      try {
+        response = await runGemini(type, messages ?? [], videoAnalysis);
+      } catch (geminiError) {
+        const msg = geminiError instanceof Error ? geminiError.message : String(geminiError);
+        const isQuotaOrRateLimit = msg.includes('429') || msg.includes('quota') || msg.includes('rate') || msg.includes('RESOURCE_EXHAUSTED');
+        if (isQuotaOrRateLimit) {
+          // Fall back to demo mode rather than returning an error to the user
+          if (type === 'buddy') {
+            response = getDemoResponse(messages ?? []);
+          } else if (type === 'coach') {
+            response = { analysis: getDemoAnalysis() };
+          } else {
+            throw geminiError;
+          }
+        } else {
+          throw geminiError;
+        }
+      }
     } else {
       if (type === 'buddy') {
         response = getDemoResponse(messages ?? []);
