@@ -65,18 +65,16 @@ export default function SpeakCoach() {
     setUploading(true)
     setError(null)
 
-    try {
-      const fileExt = file.name.split('.').pop() || 'bin'
-      const fileName = `${profile.id}/${Date.now()}.${fileExt}`
+    const fileExt = file.name.split('.').pop() || 'bin'
+    const fileName = `${profile.id}/${Date.now()}.${fileExt}`
 
+    try {
       const { error: uploadError } = await supabase.storage.from('videos').upload(fileName, file)
       if (uploadError) throw uploadError
 
-      const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
-
       const { data: sessionRecord } = await supabase
         .from('speaking_sessions')
-        .insert({ user_id: profile.id, type: 'coach', video_url: urlData.publicUrl })
+        .insert({ user_id: profile.id, type: 'coach' })
         .select('id')
         .single()
 
@@ -117,6 +115,8 @@ export default function SpeakCoach() {
     } finally {
       setUploading(false)
       setAnalyzing(false)
+      // Always delete the uploaded file — feedback is stored in the DB, not the video
+      await supabase.storage.from('videos').remove([fileName])
     }
   }
 
