@@ -76,7 +76,7 @@ export default function StudentDashboard() {
     <div className="space-y-8">
       <div>
         <p className="text-xs text-surface-600 mb-1">Dashboard</p>
-        <h1 className="text-xl font-semibold text-surface-50">
+        <h1 className="text-lg font-semibold text-surface-50">
           Welcome back, {profile?.full_name?.split(' ')[0] || 'there'}
         </h1>
       </div>

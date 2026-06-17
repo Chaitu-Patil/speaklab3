@@ -124,10 +124,19 @@ export default function SpeakBuddy() {
   }
 
   const persistMessages = async (sid: string, msgs: Message[]) => {
-    const serialized = msgs.map((m) => ({
-      role: m.role,
-      content: m.content ?? (m.payload?.responseType === 'chat' ? m.payload.message : '[coaching]'),
-    }))
+    const serialized = msgs.map((m) => {
+      if (m.role === 'user') return { role: m.role, content: m.content ?? '' }
+      if (m.payload?.responseType === 'chat') return { role: m.role, content: m.payload.message }
+      if (m.payload?.responseType === 'coaching') {
+        const p = m.payload
+        return {
+          role: m.role,
+          content: p.message || '',
+          coaching: { diagnosis: p.diagnosis, drill: p.drill, followUp: p.followUp },
+        }
+      }
+      return { role: m.role, content: '' }
+    })
     await supabase.from('speaking_sessions').update({ messages: serialized }).eq('id', sid)
   }
 
